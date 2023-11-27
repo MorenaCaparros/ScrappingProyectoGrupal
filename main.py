@@ -1,5 +1,24 @@
+import streamlit as st
 import pandas as pd
+import pyxlsb
 from pyxlsb import open_workbook
+import pip
+
+try:
+    import xlwings
+except ImportError:
+    pip.install('xlwings')
+
+import xlwings as xw
+
+print(xw.__version__)
+
+st run c:/Users/moren/OneDrive/Documents/scrapProyectogrupal/main.py
+
+st.write("""
+# My first app
+Hello *world!*
+""")
 
 # geo = "e-comerce_Olist_dataset/olist_geolocation_dataset.xlsb"
 # with open_workbook(geo) as wb:
@@ -20,12 +39,12 @@ order_reviews = pd.read_csv("e-comerce_Olist_dataset/olist_order_reviews_dataset
 # order_reviews.to_csv("e-comerce_Olist_dataset/olist_order_reviews_dataset.csv", index=False)
 
 olistorders = "e-comerce_Olist_dataset/olist_orders_dataset.xlsb"
-with open_workbook(orderitem) as wb:
+with open_workbook(olistorders) as wb:
     with wb.get_sheet(1) as sheet:
         orders = pd.DataFrame(sheet.rows())
 
-orders.drop(['order_delivered_carrier_date', 'order_estimated_delivery_date'], axis=1, inplace=True)
-with pd.ExcelWriter(output_file_path, engine='pyxlsb') as writer:
+#orders.drop(['order_delivered_carrier_date', 'order_estimated_delivery_date'], axis=1, inplace=True)
+with pd.ExcelWriter(orders, engine='pyxlsb') as writer:
     orders.to_excel(writer, index=False)
 
 
@@ -42,26 +61,26 @@ products = pd.read_csv("e-comerce_Olist_dataset/olist_products_dataset.csv")
 
 
 
-# # Merge the datasets
-# df = orders.merge(
-#     customers, how="left", on="customer_id"
-# ).merge(
-#     geolocation, how="left", left_on="customer_zip_code_prefix", right_on="geolocation_zip_code_prefix"
-# ).merge(
-#     order_items, how="left", on="order_id"
-# ).merge(
-#     order_payments, how="left", on="order_id"
-# ).merge(
-#     order_reviews, how="left", on="order_id"
-# ).merge(
-#     products, how="left", on="product_id"
-# ).merge(
-#     sellers, how="left", on="seller_id"
-# ).merge(
-#     closed_deals, how="left", on="seller_id" 
-# ).merge(
-#     marketing_leads, how="left", on="seller_id"  
-# )
+# Merge the datasets
+df = orders.merge(
+    customers, how="left", on="customer_id"
+).merge(
+    geolocation, how="left", left_on="customer_zip_code_prefix", right_on="geolocation_zip_code_prefix"
+).merge(
+    order_items, how="left", on="order_id"
+).merge(
+    order_payments, how="left", on="order_id"
+).merge(
+    order_reviews, how="left", on="order_id"
+).merge(
+    products, how="left", on="product_id"
+).merge(
+    sellers, how="left", on="seller_id"
+).merge(
+    closed_deals, how="left", on="seller_id" 
+).merge(
+    marketing_leads, how="left", on="seller_id"  
+)
 
 # # Translate the product category names
 # df["product_category_name_english"] = df["product_category_name"].map(
