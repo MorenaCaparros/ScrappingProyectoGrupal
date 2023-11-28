@@ -37,7 +37,7 @@ marketing_leads = pd.read_csv("olist_Funnel_marketing/olist_marketing_qualified_
 
 # Merge the datasets
 
-df = orders[["order_id", "customer_id", "order_status", "order_purchase_timestamp", "order_delivered_customer_date"]].merge(
+df = orders[["order_id", "customer_id"]].merge(
     customers, how="left", on="customer_id"
 ).merge(
     geolocation[[
@@ -46,7 +46,7 @@ df = orders[["order_id", "customer_id", "order_status", "order_purchase_timestam
         "geolocation_state"
     ]], how="left", left_on="customer_zip_code_prefix", right_on="geolocation_zip_code_prefix"
 ).merge(
-    order_items[["order_id","order_item_id","product_id","seller_id","price","freight_value"]], 
+    order_items[["order_id","order_item_id","product_id","seller_id"]], 
     how="left", on="order_id"
 ).merge(
     order_reviews[["review_id","order_id","review_score","review_creation_date"]],
@@ -57,9 +57,7 @@ df = orders[["order_id", "customer_id", "order_status", "order_purchase_timestam
 ).merge(
     sellers, how="left", on="seller_id"
 ).merge(
-    closed_deals, how="left", on="seller_id" 
-).merge(
-    marketing_leads, how="left", on="seller_id"  
+    closed_deals[["mql_id","seller_id", "business_segment", "declared_product_catalog_size"]], how="left", on="seller_id" 
 )
 
 # Translate the product category names
