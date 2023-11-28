@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
-import pyxlsb
-from pyxlsb import open_workbook
+import os
 import pip
 
 try:
@@ -36,7 +35,7 @@ marketing_leads = pd.read_csv("olist_Funnel_marketing/olist_marketing_qualified_
 
 
 # Merge the datasets
-
+st.write(""" ## Empezo el merge""")
 df = orders[["order_id", "customer_id"]].merge(
     customers, how="left", on="customer_id"
 ).merge(
@@ -56,23 +55,54 @@ df = orders[["order_id", "customer_id"]].merge(
     how="left", on="product_id"
 ).merge(
     sellers, how="left", on="seller_id"
-).merge(
-    closed_deals[["mql_id","seller_id", "business_segment", "declared_product_catalog_size"]], how="left", on="seller_id" 
 )
 
-# Translate the product category names
+st.write(""" ## Termino el merge""")
+
+st.write("""  Traduccion de portugues a ingles""")
+
 df["product_category_name_english"] = df["product_category_name"].map(
-    product_category_name_translation.set_index("product_category_name")["product_category_name_english"]
-)
+    product_category_name_translation.set_index("product_category_name")["product_category_name_english"])
 
-# Group the data by seller_id and calculate the number of orders
-df_grouped = df.groupby("seller_id")["order_id"].count()
+st.write("""  Eliminar comillas""")
 
-# Sort the data by the number of orders
-df_grouped = df_grouped.sort_values(ascending=False)
+# Elimina las comillas de los datos
+df = df.replace("\"", "", regex=True)
 
-# Get the top 10 sellers
-top_10_sellers = df_grouped.head(10)
+st.write(""" creacion del csv""")
+df.to_csv("new_df.csv")
 
-# Print the top 10 sellers
-print(top_10_sellers)
+if os.path.exists("./new_df.csv"):
+    print("existe")
+    st.write(""" existe""")
+    df = pd.read_csv("new_df.csv")
+    print("aca")
+    df["product_category_name_english"] = df["product_category_name"].map(
+    product_category_name_translation.set_index("product_category_name")["product_category_name_english"])
+    print("translate")
+    
+    df.to_csv("new_df.csv")
+
+else:
+    df.to_csv("new_df.csv")
+    print("no existe")
+    
+
+
+# # Group the data by seller_id and calculate the number of orders
+# st.write(""" groupby""")
+
+# df_grouped = df.groupby("seller_id")["order_id"].count()
+
+# # Sort the data by the number of orders
+# df_grouped = df_grouped.sort_values(ascending=False)
+
+# # Get the top 10 sellers
+# st.write(""" obtener top 10""")
+
+# top_10_sellers = df_grouped.head(10)
+
+# # Print the top 10 sellers
+# st.write(""" mostrarlos como tabla""")
+
+# st.table(top_10_sellers, header=True, title="Los 10 mejores vendedores")
