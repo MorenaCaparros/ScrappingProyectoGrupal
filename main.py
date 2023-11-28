@@ -69,27 +69,43 @@ st.write("""  Eliminar comillas""")
 # Elimina las comillas de los datos
 df = df.replace("\"", "", regex=True)
 
-st.write(""" creacion del csv""")
-df.to_csv("new_df.csv")
-
-if os.path.exists("./new_df.csv"):
-    print("existe")
-    st.write(""" existe""")
-    df = pd.read_csv("new_df.csv")
-    print("aca")
-    df["product_category_name_english"] = df["product_category_name"].map(
-    product_category_name_translation.set_index("product_category_name")["product_category_name_english"])
-    print("translate")
-    
-    df.to_csv("new_df.csv")
+st.write(""" Borrar una categoria porque ya la traduje antes""")
+print(df.columns)
+if "product_category_name" in df.columns:
+    # Drop the column if it exists
+    new_df = df.drop(columns=["product_category_name"])
+    st.write("""  eliminar duplicados""")
+    new_df = df
 
 else:
-    df.to_csv("new_df.csv")
-    print("no existe")
+    # Handle the case where the column doesn't exist
+    print("Column 'product_category_name' not found in the DataFrame")
+
+st.write(""" Creando csv""")
+df_sin_duplicados = df.drop_duplicates()
+df_sin_duplicados.to_csv("new_df.csv", index=False)
+st.write(""" Terminando csv""")
+
+#grouped_df = df.groupby(["customer_city", "customer_state", "geolocation_zip_code_prefix", "geolocation_city", "geolocation_state", "order_item_id", "product_id", "seller_id", "review_id", "review_score", "review_creation_date", "seller_zip_code_prefix", "seller_city", "seller_state", "product_category_name_english"])
+
+# if os.path.exists("./new_df.csv"):
+#     print("existe")
+#     st.write(""" existe""")
+#     df = pd.read_csv("new_df.csv")
+#     print("aca")
+#     df["product_category_name_english"] = df["product_category_name"].map(
+#     product_category_name_translation.set_index("product_category_name")["product_category_name_english"])
+#     print("translate")
+    
+#     df.to_csv("new_df.csv")
+
+# else:
+#     df.to_csv("new_df.csv")
+#     print("no existe")
     
 
 
-# # Group the data by seller_id and calculate the number of orders
+# Group the data by seller_id and calculate the number of orders
 # st.write(""" groupby""")
 
 # df_grouped = df.groupby("seller_id")["order_id"].count()
