@@ -36,7 +36,7 @@ marketing_leads = pd.read_csv("olist_Funnel_marketing/olist_marketing_qualified_
 # Merge the datasets
 st.write(""" ## Empezo el merge""")
 df = orders[["order_id", "customer_id", "order_status"]].merge(
-    order_items[["order_id","order_item_id","product_id","seller_id"]], 
+    order_items[["order_id","order_item_id","product_id","seller_id", "price","freight_value"]], 
     how="inner", on="order_id"
 ).merge(
     customers, how="left", on="customer_id"
