@@ -32,16 +32,14 @@ product_category_name_translation = pd.read_csv("e-comerce_Olist_dataset/product
 closed_deals = pd.read_csv("olist_Funnel_marketing/olist_closed_deals_dataset.csv")
 marketing_leads = pd.read_csv("olist_Funnel_marketing/olist_marketing_qualified_leads_dataset.csv")
 
-filtered_orders = orders[orders['order_status'] != 'unavailable']
-
 
 # Merge the datasets
 st.write(""" ## Empezo el merge""")
-df = filtered_orders[["order_id", "customer_id", "order_status"]].merge(
-    customers, how="left", on="customer_id"
-).merge(
+df = orders[["order_id", "customer_id", "order_status"]].merge(
     order_items[["order_id","order_item_id","product_id","seller_id"]], 
-    how="left", on="order_id"
+    how="inner", on="order_id"
+).merge(
+    customers, how="left", on="customer_id"
 ).merge(
     order_reviews[["review_id","order_id","review_score","review_creation_date"]],
     how="left", on="order_id"
@@ -56,8 +54,14 @@ st.write(""" ## Termino el merge""")
 
 st.write("""  Traduccion de portugues a ingles""")
 
-df["product_category_name_english"] = df["product_category_name"].map(
+
+df["product_category_name"] = df["product_category_name"].map(
     product_category_name_translation.set_index("product_category_name")["product_category_name_english"])
+
+#Replace null for 0 and for without_category
+df['review_score'] = df['review_score'].fillna(0)
+df['product_category_name'] = df['product_category_name'].fillna("without_category")
+
 
 st.write("""  Eliminar comillas""")
 
@@ -66,15 +70,7 @@ df = df.replace("\"", "", regex=True)
 
 st.write(""" Borrar una categoria porque ya la traduje antes""")
 print(df.columns)
-if "product_category_name" in df.columns:
-    # Drop the column if it exists
-    new_df = df.drop(columns=["product_category_name"])
-    st.write("""  eliminar duplicados""")
-    new_df = df
 
-else:
-    # Handle the case where the column doesn't exist
-    print("Column 'product_category_name' not found in the DataFrame")
 
 st.write(""" Creando csv""")
 df_sin_duplicados = df.drop_duplicates()
