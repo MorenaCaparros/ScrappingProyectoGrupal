@@ -32,18 +32,13 @@ product_category_name_translation = pd.read_csv("e-comerce_Olist_dataset/product
 closed_deals = pd.read_csv("olist_Funnel_marketing/olist_closed_deals_dataset.csv")
 marketing_leads = pd.read_csv("olist_Funnel_marketing/olist_marketing_qualified_leads_dataset.csv")
 
+filtered_orders = orders[orders['order_status'] != 'unavailable']
 
 
 # Merge the datasets
 st.write(""" ## Empezo el merge""")
-df = orders[["order_id", "customer_id"]].merge(
+df = filtered_orders[["order_id", "customer_id", "order_status"]].merge(
     customers, how="left", on="customer_id"
-).merge(
-    geolocation[[
-        "geolocation_zip_code_prefix",
-        "geolocation_city",
-        "geolocation_state"
-    ]], how="left", left_on="customer_zip_code_prefix", right_on="geolocation_zip_code_prefix"
 ).merge(
     order_items[["order_id","order_item_id","product_id","seller_id"]], 
     how="left", on="order_id"
