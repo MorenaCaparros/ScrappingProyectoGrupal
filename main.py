@@ -77,17 +77,26 @@ number_fillna = 0
 df_ordered['review_id'].fillna(number_fillna, inplace=True)
 nan_values = df_ordered[df_ordered.isnull().any(axis=1)]
 
-db_o.create_database_tables()
-# Llamar a la función insert_data_to_db con los valores ordenados para la inserción
-df_sin_duplicados = df_ordered.drop_duplicates()
-print("insertando datos")
-db_o.insert_data_to_db(df_sin_duplicados)
+#Insercion de datos esto ya se realizo al 10/12 pero si se requiere realizar otra insercion modificar o agregar database
+# db_o.create_database_tables()
+# # Llamar a la función insert_data_to_db con los valores ordenados para la inserción
+# df_sin_duplicados = df_ordered.drop_duplicates()
 
-print("ya se inserto los datos")
+# batch_size = 1000  # Tamaño del lote
 
 
-df_sin_duplicados.to_csv("new_df.csv", index=False)
-st.write(""" Terminando csv""")
+# # Dividir el DataFrame en lotes más pequeños
+# for i in range(0, len(df_sin_duplicados), batch_size):
+#     batch = df_sin_duplicados.iloc[i:i+batch_size]
+#     # Lógica para insertar el lote actual en la base de datos
+#     db_o.insert_data_to_db(batch)
+#     print(f"Vamos por el batch {i} de {len(df_sin_duplicados)}")
+
+
+# print("insertando datos")
+# db_o.insert_data_to_db(df_sin_duplicados)
+# print("ya se inserto los datos")
+
 
 #grouped_df = df.groupby(["customer_city", "customer_state", "geolocation_zip_code_prefix", "geolocation_city", "geolocation_state", "order_item_id", "product_id", "seller_id", "review_id", "review_score", "review_creation_date", "seller_zip_code_prefix", "seller_city", "seller_state", "product_category_name_english"])
 

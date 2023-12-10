@@ -60,24 +60,26 @@ def insert_data_to_db(dforders):
 
     try:
         conn.select_db('soyHenryGrupal')
-        # Iterar sobre los valores recibidos
-        for index, row in dforders.iterrows():
-            value_set = tuple(row)  # Convertir la fila a una tupla
-            # Armar la sentencia SQL de inserción
-            sql = '''
-                INSERT INTO orders (
-                    order_id, order_item_id, customer_id, customer_unique_id, customer_zip_code_prefix,
-                    customer_city, customer_state, seller_id, seller_city, seller_zip_code_prefix,
-                    seller_state, review_id, product_id, product_category_name, order_delivery_date,
-                    order_status, price, freight_value, review_score, review_creation_date
-                ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
-                )
-            '''
-            print("se insertaron")
-            # Ejecutar la sentencia SQL de inserción para cada conjunto de valores
-            cursor.execute(sql, value_set)
-            print("el codigo continua")
+        # lo que se hace es pasar a los valores de las filas a listas, entonces
+        #se forma una lista de listas, y es mas eficiente para insertar grandes
+        #volumenes de datos
+        
+        values_to_insert = dforders.values.tolist()
+        # Armar la sentencia SQL de inserción
+        sql = '''
+            INSERT INTO orders (
+                order_id, order_item_id, customer_id, customer_unique_id, customer_zip_code_prefix,
+                customer_city, customer_state, seller_id, seller_city, seller_zip_code_prefix,
+                seller_state, review_id, product_id, product_category_name, order_delivery_date,
+                order_status, price, freight_value, review_score, review_creation_date
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+            )
+        '''
+        # Ejecutar la sentencia SQL de inserción con executemany. Esto tarda menos que solo execute
+        cursor.executemany(sql, values_to_insert)
+
+        print("se insertaron")
         # Confirmar los cambios y cerrar la conexión
         conn.commit()
         cursor.close()
