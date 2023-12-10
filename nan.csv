@@ -1,0 +1,1 @@
+order_id,order_item_id,customer_id,customer_unique_id,customer_zip_code_prefix,customer_city,customer_state,seller_id,seller_city,seller_zip_code_prefix,seller_state,review_id,product_id,product_category_name,order_estimated_delivery_date,order_status,price,freight_value,review_score,review_creation_date
